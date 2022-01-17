@@ -1,8 +1,8 @@
 const options = {
     multipleStatements: true,
-    host: 'localhost',
-    user: 'root',
-    password: '',
+    host: 'imapplication.cc4opw2fthfp.us-east-1.rds.amazonaws.com',
+    user: 'parkinggt',
+    password: 'parkinggt',
     database: 'parkinggt',
     dateStrings: true
 };
