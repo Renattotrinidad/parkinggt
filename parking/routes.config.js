@@ -11,7 +11,7 @@ exports.routesConfig = async (app) => {
         }
     ]);
 
-    app.post('/parking/available', [
+    app.get('/parking/available/:parkingLotParkingCode', [
         passport.authenticate('bearer', {
             session: false
         }),

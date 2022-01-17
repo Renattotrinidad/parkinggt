@@ -59,10 +59,10 @@ class parking {
         }
     }
 
-    async parkingAvailable(parking) {
+    async parkingAvailable(parkingLotParkingCode) {
         const connection = await mysql.createConnection(config.options);
         try {
-            const query = `SELECT * FROM parkingLot WHERE parkingLotParking = ` + parking.parkingLotParkingCode + ` AND parkingLotStatus = 1 AND parkingLotDeleted = 0;`;
+            const query = `SELECT * FROM parkingLot WHERE parkingLotParking = ` + parkingLotParkingCode + ` AND parkingLotStatus = 1 AND parkingLotDeleted = 0;`;
             let queryResult = await connection.query(query);
             return Promise.resolve(queryResult[0]);
         } catch (error) {

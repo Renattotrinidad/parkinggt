@@ -2,7 +2,7 @@ const parkingModel = require('../models/parking.model');
 
 exports.available = async (req, res) => {
     try {
-        const parkingResponse = await parkingModel.parkingAvailable(req.body);
+        const parkingResponse = await parkingModel.parkingAvailable(req.params.parkingLotParkingCode);
         return Promise.resolve(res.status(200).send({
             statusCode: 200,
             result: true,
