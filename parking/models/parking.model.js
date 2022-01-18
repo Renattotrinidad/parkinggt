@@ -26,7 +26,7 @@ class parking {
                 0
             );
             
-            UPDATE parkinglot SET parkingLotInUse = 1 WHERE parkingLotCode = ` + parking.ticketParkingLot + `;
+            UPDATE parkingLot SET parkingLotInUse = 1 WHERE parkingLotCode = ` + parking.ticketParkingLot + `;
             `;
             let queryResult = await connection.query(query);
             await connection.commit();
@@ -62,7 +62,7 @@ class parking {
     async parkingAvailable(parkingLotParkingCode) {
         const connection = await mysql.createConnection(config.options);
         try {
-            const query = `SELECT * FROM parkingLot WHERE parkingLotParking = ` + parkingLotParkingCode + ` AND parkingLotStatus = 1 AND parkingLotDeleted = 0;`;
+            const query = `SELECT * FROM parkingLot AS pl INNER JOIN vehicleType AS vt ON pl.parkingLotVehicleType = vt.vehicleTypeCode WHERE parkingLotParking = ` + parkingLotParkingCode + ` AND parkingLotStatus = 1 AND parkingLotDeleted = 0;`;
             let queryResult = await connection.query(query);
             return Promise.resolve(queryResult[0]);
         } catch (error) {
@@ -74,6 +74,75 @@ class parking {
         const connection = await mysql.createConnection(config.options);
         try {
             const query = `SELECT * FROM vehicleType WHERE vehicleTypeParking = ` + parkingCode + ` AND vehicleTypeStatus = 1 AND vehicleTypeDeleted = 0;`;
+            let queryResult = await connection.query(query);
+            return Promise.resolve(queryResult[0]);
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    async ticketByDate(begDate, endDate) {
+        const connection = await mysql.createConnection(config.options);
+        try {
+            const query = `SELECT * FROM ticket AS t WHERE t.ticketDate BETWEEN '` + begDate + `' AND '` + endDate + `';`;
+            let queryResult = await connection.query(query);
+            return Promise.resolve(queryResult[0]);
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    async ticketByPlate(plate) {
+        const connection = await mysql.createConnection(config.options);
+        try {
+            const query = `SELECT * FROM ticket AS t WHERE t.ticketPlate LIKE '%` + plate + `%';`;
+            let queryResult = await connection.query(query);
+            return Promise.resolve(queryResult[0]);
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    async ticketByLot(begDate, endDate) {
+        const connection = await mysql.createConnection(config.options);
+        try {
+            const query = `SELECT t.ticketParkingLot, pl.parkingLotBusinessCode, COUNT(t.ticketPlate) as quantity FROM ticket AS t INNER JOIN parkingLot AS pl ON pl.parkingLotCode = t.ticketParkingLot
+            WHERE t.ticketDate BETWEEN '` + begDate + `'
+            AND '` + endDate + `'
+            GROUP BY t.ticketParkingLot, pl.parkingLotBusinessCode;
+            `;
+            let queryResult = await connection.query(query);
+            return Promise.resolve(queryResult[0]);
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    async lotQuantityByLot(lot) {
+        const connection = await mysql.createConnection(config.options);
+        try {
+            const query = `SELECT t.ticketParkingLot, pl.parkingLotBusinessCode, IFNULL(COUNT(t.ticketPlate),0) as quantity FROM ticket AS t RIGHT JOIN parkingLot AS pl ON pl.parkingLotCode = t.ticketParkingLot
+            WHERE pl.parkingLotBusinessCode = '` + lot + `'
+            GROUP BY t.ticketParkingLot, pl.parkingLotBusinessCode;
+            `;
+            let queryResult = await connection.query(query);
+            return Promise.resolve(queryResult[0]);
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    async lotQuantityByday(date) {
+        const connection = await mysql.createConnection(config.options);
+        try {
+            const query = `SELECT pl.parkingLotBusinessCode, HOUR(t.ticketDate), DATE(t.ticketDate) FROM
+ticket AS t 
+INNER JOIN parkingLot AS pl ON pl.parkingLotCode = t.ticketParkingLot
+GROUP BY 
+	pl.parkingLotBusinessCode,
+	DATE(t.ticketDate),
+	HOUR(t.ticketDate);
+            `;
             let queryResult = await connection.query(query);
             return Promise.resolve(queryResult[0]);
         } catch (error) {
