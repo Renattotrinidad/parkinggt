@@ -128,7 +128,7 @@ exports.exit = async (req, res) => {
             statusCode: 200,
             result: true,
             message: 'Operación exitosa',
-            records: parkingResponse
+
         }));
     } catch (error) {
         return Promise.reject(error);

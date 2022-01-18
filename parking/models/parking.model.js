@@ -46,7 +46,7 @@ class parking {
             const query = `
             UPDATE ticket SET ticketPay = '1', ticketOut = NOW() WHERE ticketCode = ` + parking.ticketCode + `;
             
-            UPDATE parkinglot SET parkingLotInUse = 0 WHERE parkingLotCode = ` + parking.ticketParkingLot + `;
+            UPDATE parkingLot SET parkingLotInUse = 0 WHERE parkingLotCode = ` + parking.ticketParkingLot + `;
             `;
             let queryResult = await connection.query(query);
             await connection.commit();

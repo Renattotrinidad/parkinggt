@@ -11,6 +11,15 @@ exports.routesConfig = async (app) => {
         }
     ]);
 
+    app.post('/parking/exit', [
+        passport.authenticate('bearer', {
+            session: false
+        }),
+        async (req, res) => {
+            return res = await parkingController.exit(req, res);
+        }
+    ]);
+
     app.get('/parking/available/:parkingLotParkingCode', [
         passport.authenticate('bearer', {
             session: false
